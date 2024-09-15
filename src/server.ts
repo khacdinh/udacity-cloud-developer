@@ -32,11 +32,11 @@ import fs from 'fs';
   app.get('/filteredimage', async (req: Request, res: Response) => {
     const imageUrl:string = req.query['image_url'];
     if(imageUrl == null || imageUrl == '') {
-      res.status(400).send('input image_url is required');
+      res.status(400).send('The input image_url is required');
     }
 
     if(!/^https?:\/\/.+/i.test(imageUrl)) {
-      res.status(400).send('input image_url is not a valid URL.');
+      res.status(400).send('The input image_url is not a valid URL.');
     }
 
     try {

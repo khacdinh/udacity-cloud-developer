@@ -8,24 +8,31 @@ import Jimp = require("jimp");
 //    inputURL: string - a publicly accessible url to an image file
 // RETURNS
 //    an absolute path to a filtered image locally saved file
+import axios from 'axios';
+
 export async function filterImageFromURL(inputURL: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
-      const photo = await Jimp.read(inputURL);
-      const outpath =
-        "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+      // Check if the URL returns a valid image
+      const response = await axios.get(inputURL, { responseType: 'arraybuffer' });
+      const buffer = Buffer.from(response.data, 'binary');
+
+      // Check if Jimp can read the buffer
+      const photo = await Jimp.read(buffer);
+      const outpath = "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
       await photo
         .resize(256, 256) // resize
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
-        .write(__dirname + outpath, (img) => {
+        .write(__dirname + outpath, () => {
           resolve(__dirname + outpath);
         });
     } catch (error) {
-      reject(error);
+      reject(`Error processing image`);
     }
   });
 }
+
 
 // deleteLocalFiles
 // helper function to delete files on the local disk
